@@ -1,11 +1,16 @@
 package edu.miu.badge.controllers;
 
-import edu.miu.badge.domains.Transaction;
+import edu.miu.badge.dto.RequestTransactionDTO;
+import edu.miu.badge.dto.ResponseTransactionDTO;
+import edu.miu.badge.exceptions.TransactionDeclinedException;
+import edu.miu.badge.exceptions.ResourceNotFoundException;
 import edu.miu.badge.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class TransactionController {
@@ -13,24 +18,17 @@ public class TransactionController {
     TransactionService transactionService;
 
     @PostMapping("/transactions")
-    public ResponseEntity<?> createTransaction(@RequestBody Transaction transaction){
-        return new ResponseEntity<String>(transactionService.createTransaction(transaction).toString(), HttpStatus.OK);
+    public ResponseEntity<?> createTransaction(@RequestBody RequestTransactionDTO requestTransactionDTO) throws TransactionDeclinedException {
+            return new ResponseEntity<>(transactionService.createTransaction(requestTransactionDTO), HttpStatus.OK);
     }
     @GetMapping("/transactions/{id}")
-    public ResponseEntity<?> getTransaction(@PathVariable int id){
-        return new ResponseEntity<String>(transactionService.getTransaction(id).toString(), HttpStatus.OK);
+    public ResponseEntity<?> getTransaction(@PathVariable int id) throws ResourceNotFoundException {
+        return new ResponseEntity<>(transactionService.getTransaction(id), HttpStatus.OK);
     }
-    @PutMapping("/transactions/{id}")
-    public ResponseEntity<?> updateTransaction(@PathVariable int id, @RequestBody Transaction transaction){
-        return new ResponseEntity<String> (transactionService.updateTransaction(transaction).toString(), HttpStatus.OK);
-    }
-    @DeleteMapping("/transactions/{id}")
-    public ResponseEntity<?> deleteTransaction(@PathVariable int id){
-       return new ResponseEntity<String> (transactionService.deleteTransaction(id), HttpStatus.OK);
-    }
+
     @GetMapping("/transactions")
-    public String getAllTransactions(){
-        return transactionService.getAllTransactions().toString();
+    public List<ResponseTransactionDTO> getAllTransactions(){
+        return transactionService.getAllTransactions();
     }
 
 

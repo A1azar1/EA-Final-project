@@ -1,17 +1,18 @@
 package edu.miu.badge.domains;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import edu.miu.badge.enumeration.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.time.format.DateTimeFormatter;
+
 
 @Entity
 @Getter
 @Setter
-@ToString
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "Transactions")
@@ -20,23 +21,22 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "[transaction_id]")
     private int id;
-    @Column(name = "[date]")
+
+    @Column(name = "[date]", nullable = false)
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS][.SS][.S]")
     private LocalDateTime date;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "membership_id")
     private Membership membership;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id")
     private Location location;
-
     @Column(name = "[type]")
-    private TransactionType transactionType;
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
 }
 
-enum TransactionType {
-    ALLOWED, DENIED
-}
